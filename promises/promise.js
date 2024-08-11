@@ -65,3 +65,16 @@ promise1.then(function(user){
 }).finally(function(){
   console.log("Either the promise is fulfilled or rejected");
 });
+
+
+function promisified(resolve){
+  setTimeout(resolve, 3000);
+}
+
+const p = new Promise(promisified);
+
+function callback(){
+  console.log("3 seconds have passed");
+}
+
+p.then(callback);
