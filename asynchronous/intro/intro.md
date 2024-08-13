@@ -18,22 +18,22 @@ console.log(z);
 ### Example 2: (Synchronous code)
 
 ```js
-console.log('start');
+console.log("start");
 
-console.log('Print something');
+console.log("Print something");
 
 // I/O operation, API calls, database calls, etc.
 // these take some time to complete/execute
 
-const fs = require('fs');
+const fs = require("fs");
 try {
-  const data = fs.readFileSync('file.txt', 'utf8'); // synchronous code
-  console.log(data); 
+  const data = fs.readFileSync("file.txt", "utf8"); // synchronous code
+  console.log(data);
 } catch (err) {
   console.error(err);
 }
 
-console.log('end');
+console.log("end");
 ```
 
 ![alt text](image.png)
@@ -49,16 +49,17 @@ console.log('end');
 A `callback` is a function that is passed as an argument to another function and is executed once an event has occurred or a certain condition is met.
 
 ### Example:
+
 ```js
-function difference(a, b){
+function difference(a, b) {
   return a - b;
 }
 
-function sum(a, b){
+function sum(a, b) {
   return a + b;
 }
 
-function calculator(a, b, callback){
+function calculator(a, b, callback) {
   const result = callback(a, b);
   return result;
 }
@@ -66,27 +67,33 @@ function calculator(a, b, callback){
 console.log(calculator(3, 2, sum));
 console.log(calculator(3, 2, difference));
 ```
+
 ### Similarly here `hello()` is a callback function
+
 ```js
-function hello(){
-    console.log("Hello");
+function hello() {
+  console.log("Hello");
 }
 
 setTimeout(hello, 1000);
 ```
-or  
+
+or
+
 ```js
-setTimeout(function(){
-    console.log("Hello");
+setTimeout(function () {
+  console.log("Hello");
 }, 1000);
 ```
-or 
+
+or
 
 ```js
 setTimeout(() => {
-    console.log("Hello");
+  console.log("Hello");
 }, 1000);
 ```
+
 The `setTimeout()` takes a callback function as an argument and executes it after the specified time which is 1000 milliseconds in this case.
 
 ## What is Callback hell?
@@ -94,46 +101,50 @@ The `setTimeout()` takes a callback function as an argument and executes it afte
 The `callback hell` is a situation where you have to write a lot of nested callbacks to achieve the desired result.
 
 ### Example:
+
 ```js
-console.log('Start');
+console.log("Start");
 
 // Simulating an API call to fetch a user from the database
 function getUser(userId, callback) {
   setTimeout(() => {
-    console.log('Fetched user');
-    callback({ userId: userId, username: 'mounish' });
+    console.log("Fetched user");
+    callback({ userId: userId, username: "mounish" });
   }, 1000);
 }
 
 // Simulating an API call to fetch posts for a user
 function getPosts(userId, callback) {
   setTimeout(() => {
-    console.log('Fetched posts');
-    callback([{ postId: 1, content: 'Hello World' }, { postId: 2, content: 'Callback Hell!' }]);
+    console.log("Fetched posts");
+    callback([
+      { postId: 1, content: "Hello World" },
+      { postId: 2, content: "Callback Hell!" },
+    ]);
   }, 1000);
 }
 
 // Simulating an API call to fetch comments for a post
 function getComments(postId, callback) {
   setTimeout(() => {
-    console.log('Fetched comments');
-    callback(['Great post!', 'Very informative.']);
+    console.log("Fetched comments");
+    callback(["Great post!", "Very informative."]);
   }, 1000);
 }
 
 // Chaining the callbacks
 getUser(1, (user) => {
-  console.log('User:', user.username);
+  console.log("User:", user.username);
 
   getPosts(user.userId, (posts) => {
-    console.log('Posts:', posts);
+    console.log("Posts:", posts);
 
     getComments(posts[0].postId, (comments) => {
-      console.log('Comments on first post:', comments);
+      console.log("Comments on first post:", comments);
 
       getComments(posts[1].postId, (comments) => {
-        console.log('Comments on second post:', comments);
-        console.log('End');
+        console.log("Comments on second post:", comments);
+        console.log("End");
       });
     });
   });
@@ -141,6 +152,7 @@ getUser(1, (user) => {
 ```
 
 ### Output:
+
 ```
 Start
 Fetched user
@@ -154,7 +166,7 @@ Comments on second post: [ 'Great post!', 'Very informative.' ]
 End
 ```
 
-- As you can see that the code is hard to read and understand. 
+- As you can see that the code is hard to read and understand.
 - The code is also hard to maintain and debug.
 - This is the problem of callback hell.
 
@@ -172,12 +184,14 @@ A `Promise` is an object that represents the eventual completion (or failure) of
 promise.then( (res) => {...} )
 promise.catch( (err) => {...} )
 ```
+
 ```js
-promise.finally( () => {...} ) 
+promise.finally( () => {...} )
 // This is called always after the success or error callbacks
 ```
 
 ### Example:
+
 ```js
 function sum(a, b) {
   return a + b;
@@ -214,9 +228,39 @@ calculator(3, 2, difference)
     console.error("Error:", error);
   });
 ```
+
 ### Output:
+
 ```
 Sum: 5
 Difference: 1
 ```
 
+## async await
+
+- An `async` function is a function that returns a Promise object.
+- `await` is used to wait for the Promise to resolve or reject, and then assign the result to a variable.
+
+```js
+async function getUserDetails(userId) {
+  const response = await fetch(
+    `https://jsonplaceholder.typicode.com/users/${userId}`
+  );
+  const user = await response.json(); // Parse the JSON response
+  return user; // Return the parsed user data
+}
+
+// Example of how to use the getDetails function
+let userId = 1;
+getUserDetails(userId)
+  .then((user) => {
+    return user; // Return the user object to the next then() function
+  })
+  .then((res) => {
+    const name = res.name;
+    console.log(name); // Access the name property of the user object
+  })
+  .catch((error) => {
+    console.error("Error:", error);
+  });
+```
