@@ -264,3 +264,25 @@ getUserDetails(userId)
     console.error("Error:", error);
   });
 ```
+
+## IIFE (Immediately Invoked Function Expression)
+
+- An IIFE is a function that is executed immediately after it is defined.
+
+```js
+(function () {
+  console.log("Hello");
+})();
+
+(() => {
+  console.log("Hello"); 
+})();
+
+(async function () {
+    console.log("Hello");
+})();
+
+(async () => {
+    console.log("Hello");   
+})();
+```
