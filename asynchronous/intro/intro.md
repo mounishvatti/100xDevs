@@ -193,40 +193,70 @@ promise.finally( () => {...} )
 ### Example:
 
 ```js
-function sum(a, b) {
-  return a + b;
-}
-
-function difference(a, b) {
-  return a - b;
-}
-
-function calculator(a, b, fn) {
+function getUser(userId) {
   return new Promise((resolve, reject) => {
-    try {
-      const result = fn(a, b);
-      resolve(result);
-    } catch (error) {
-      reject("error occured");
-    }
+    setTimeout(function () {
+      try {
+        console.log("Fetched user");
+        resolve({ userId: userId, username: "mounish" }); // what
+      } catch (error) {
+        reject("Error found while fetching user", error);
+      }
+    }, 1000);
   });
 }
 
-calculator(3, 2, sum)
-  .then((result) => {
-    console.log("Sum:", result);
+function getPosts(userId) { 
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      console.log("Fetched posts");
+      resolve([
+        { postId: 1, content: "Hello World" },
+        { postId: 2, content: "Callback Hell!" },
+      ]);
+    }, 1000);
+  });
+}
+
+function getComment1(postId) {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      console.log("Fetched comment 1");
+      resolve(["Great post!", "Very informative."]);
+    }, 1000);
+  });
+}
+
+function getComment2(postId) {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      console.log("Fetched comments 2");
+      resolve(["Splendid!", "Wonderful."]);
+    }, 1000);
+  });
+}
+
+getUser(1)
+  .then((obj) => {
+    console.log("User:", obj.username);
+    return getPosts(obj.userId);
   })
-  .catch((error) => {
-    console.error("Error:", error);
+  .then((posts) => {
+    console.log("Posts:", posts);
+    return Promise.all([
+      getComment1(posts[0].postId),
+      getComment2(posts[1].postId),
+    ]);
+  })
+  .then((comment) => {
+    console.log("Comments on first post:", comment[0]);
+    console.log("Comments on second post:", comment[1]);
+    //return getComments(posts[0].postId)
+  })
+  .finally(() => {
+    console.log("Finished!!");
   });
 
-calculator(3, 2, difference)
-  .then((result) => {
-    console.log("Difference:", result);
-  })
-  .catch((error) => {
-    console.error("Error:", error);
-  });
 ```
 
 ### Output:
@@ -263,6 +293,77 @@ getUserDetails(userId)
   .catch((error) => {
     console.error("Error:", error);
   });
+```
+
+```js
+async function getUser(userId) {
+  return new Promise((resolve, reject) => {
+    setTimeout(function () {
+      try {
+        console.log("Fetched user");
+        resolve({ userId: userId, username: "mounish" });
+      } catch (error) {
+        reject("Error found while fetching user", error);
+      }
+    }, 1000);
+  });
+}
+
+async function getPosts(userId) {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      console.log("Fetched posts");
+      resolve([
+        { postId: 1, content: "Hello World" },
+        { postId: 2, content: "Callback Hell!" },
+      ]);
+    }, 1000);
+  });
+}
+
+async function getComment1(postId) {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      console.log("Fetched comment 1");
+      resolve(["Great post!", "Very informative."]);
+    }, 1000);
+  });
+}
+
+async function getComment2(postId) {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      console.log("Fetched comments 2");
+      resolve(["Splendid!", "Wonderful."]);
+    }, 1000);
+  });
+}
+
+async function main() {
+  try {
+    const user = await getUser(1);
+    console.log("User:", user.username);
+
+    const posts = await getPosts(user.userId);
+    console.log("Posts:", posts);
+
+    const comments = await Promise.all([
+      getComment1(posts[0].postId),
+      getComment2(posts[1].postId),
+    ]);
+
+    console.log("Comments on first post:", comments[0]);
+    console.log("Comments on second post:", comments[1]);
+  } catch (error) {
+    console.error("Error:", error);
+  } finally {
+    console.log("Finished!!");
+  }
+}
+
+// Call the main function
+main();
+
 ```
 
 ## IIFE (Immediately Invoked Function Expression)
